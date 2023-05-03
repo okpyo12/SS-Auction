@@ -1,26 +1,340 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
     <script src='web3.min.js'></script>
     <script type="text/javascript">
+
+        async function registClick() {
+            if (contractInstance != null) {
+                try {
+                    let valproductName = document.getElementsByClassName('productName')[0].value
+                    let valproductAmount = document.getElementsByClassName('productAmount')[0].value
+                    let valproductTime = document.getElementsByClassName('productTime')[0].value
+                    let value = await contractInstance.methods.registerProduct(valproductName, valproductAmount, valproductTime).send({ from: accounts[0] });
+                    
+                } catch (e) {
+                    console.log(e)
+                }
+            }
+        }
+
+        async function bidClick() {
+            if (contractInstance != null) {
+                try {
+                    let valbidAmount = document.getElementsByClassName('bidAmount')[0].value
+                    let value = await contractInstance.methods.registerProduct(valbidAmount).send({ from: accounts[0] });
+                } catch (e) {
+                    console.log(e)
+                }
+            }
+        }
+
+        // bidding page로 이동
+        var bidding = function (number) {
+            location.href = "bidding.html?product=" + number;
+        };
+
         // wallet 연결
         async function connectWallet() {
             var web3 = new Web3(Web3.givenProvider);
-            web3.eth.getAccounts(function (error, accounts) {
+            web3.eth.getAccounts(function (error, account) {
                 if (error) {
                     console.log(error);
                     return;
                 }
+                accounts = account
                 const showAccount = document.querySelector('.address')
-                showAccount.innerHTML = accounts[0]
+                showAccount.innerHTML = account[0]
             });
+
+            var abiobj = [
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        {
+                            "indexed": false,
+                            "internalType": "uint256",
+                            "name": "productId",
+                            "type": "uint256"
+                        },
+                        {
+                            "indexed": false,
+                            "internalType": "address",
+                            "name": "winner",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "internalType": "uint256",
+                            "name": "bid",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "AuctionEnded",
+                    "type": "event"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "_productId",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "bid",
+                    "outputs": [],
+                    "stateMutability": "payable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "_productId",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "endAuction",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        {
+                            "indexed": false,
+                            "internalType": "uint256",
+                            "name": "productId",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "NewProduct",
+                    "type": "event"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "string",
+                            "name": "_name",
+                            "type": "string"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "_price",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "_auctionEnd",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "registerProduct",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "auctionInfo",
+                    "outputs": [
+                        {
+                            "internalType": "address payable",
+                            "name": "beneficiary",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "auctionEnd",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "bool",
+                            "name": "ended",
+                            "type": "bool"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "getAuctions",
+                    "outputs": [
+                        {
+                            "components": [
+                                {
+                                    "internalType": "address payable",
+                                    "name": "beneficiary",
+                                    "type": "address"
+                                },
+                                {
+                                    "internalType": "uint256",
+                                    "name": "auctionEnd",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "internalType": "bool",
+                                    "name": "ended",
+                                    "type": "bool"
+                                }
+                            ],
+                            "internalType": "struct Auction.AuctionInfo[]",
+                            "name": "",
+                            "type": "tuple[]"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "_productId",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "getProduct",
+                    "outputs": [
+                        {
+                            "internalType": "string",
+                            "name": "",
+                            "type": "string"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "address",
+                            "name": "",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "bool",
+                            "name": "",
+                            "type": "bool"
+                        },
+                        {
+                            "internalType": "address",
+                            "name": "",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "getProducts",
+                    "outputs": [
+                        {
+                            "components": [
+                                {
+                                    "internalType": "string",
+                                    "name": "name",
+                                    "type": "string"
+                                },
+                                {
+                                    "internalType": "uint256",
+                                    "name": "price",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "internalType": "address",
+                                    "name": "owner",
+                                    "type": "address"
+                                },
+                                {
+                                    "internalType": "bool",
+                                    "name": "sold",
+                                    "type": "bool"
+                                },
+                                {
+                                    "internalType": "address payable",
+                                    "name": "bidder",
+                                    "type": "address"
+                                },
+                                {
+                                    "internalType": "uint256",
+                                    "name": "bid",
+                                    "type": "uint256"
+                                }
+                            ],
+                            "internalType": "struct Auction.Product[]",
+                            "name": "",
+                            "type": "tuple[]"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "products",
+                    "outputs": [
+                        {
+                            "internalType": "string",
+                            "name": "name",
+                            "type": "string"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "price",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "address",
+                            "name": "owner",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "bool",
+                            "name": "sold",
+                            "type": "bool"
+                        },
+                        {
+                            "internalType": "address payable",
+                            "name": "bidder",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "bid",
+                            "type": "uint256"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                }
+            ];
+            var address = "0x46E0F49191E82146135638b3ECE00eDE03317047";
+            window.web3 = new Web3(window.ethereum);
+            contractInstance = await new window.web3.eth.Contract(abiobj, address);
         }
-        // bidding page로 이동
-        var bidding = function(number) {
-            location.href = "bidding.html?product=" + number;
-        };
     </script>
     <style>
         @font-face {
@@ -96,7 +410,7 @@
             position: relative;
         }
 
-        .blockWrap > div > div {
+        .blockWrap>div>div {
             display: flex;
             flex-direction: column;
             margin-bottom: 20px;
@@ -117,6 +431,7 @@
         .ProductWrap {
             margin-bottom: 60px;
         }
+
         .ProductWrap .product {
             border: 1px solid #7c7c7c;
             border-radius: 12px;
@@ -131,7 +446,8 @@
             margin-bottom: 60px;
         }
 
-        .RecordWrap>div:first-child, .ProductWrap>div:first-child {
+        .RecordWrap>div:first-child,
+        .ProductWrap>div:first-child {
             font-weight: 700;
             font-size: 20px;
             margin-bottom: 20px;
@@ -164,6 +480,7 @@
         }
     </style>
 </head>
+
 <body>
     <div>
         <div class="infoWrap">
@@ -180,7 +497,7 @@
                 <button onclick="connectWallet()">connect account</button>
                 <div>
                     <span>Address : </span>
-                    <span class="address">&nbsp;</span>
+                    <span class="address"></span>
                 </div>
             </div>
         </div>
@@ -189,17 +506,17 @@
                 <div class="subTitle">Registering a Product</div>
                 <div>
                     <div class="inputTitle">Product Name</div>
-                    <input type="text" placeholder="Enter the product name" />
+                    <input class="productName" type="text" placeholder="Enter the product name" />
                 </div>
                 <div>
                     <div class="inputTitle">Minimum bid amount</div>
-                    <input type="number" placeholder="Enter the minimum bid amount" />
+                    <input class="productAmount" type="number" placeholder="Enter the minimum bid amount" />
                 </div>
                 <div>
                     <div class="inputTitle">End time of auction</div>
-                    <input type="time" placeholder="Enter the end time of auction" />
+                    <input class="productTime" type="number" placeholder="Enter the end time of auction" />
                 </div>
-                <button>Register</button>
+                <button onclick="registClick()">Register</button>
             </div>
         </div>
         <div class="ProductWrap">
