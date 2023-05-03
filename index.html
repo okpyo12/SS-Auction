@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
     <script src='web3.min.js'></script>
     <script type="text/javascript">
-
+        // wallet 연결
         async function connectWallet() {
             var web3 = new Web3(Web3.givenProvider);
             web3.eth.getAccounts(function (error, accounts) {
@@ -16,9 +15,12 @@
                 }
                 const showAccount = document.querySelector('.address')
                 showAccount.innerHTML = accounts[0]
-                console.log(accounts[0]);
             });
         }
+        // bidding page로 이동
+        var bidding = function(number) {
+            location.href = "bidding.html?product=" + number;
+        };
     </script>
     <style>
         @font-face {
@@ -38,7 +40,7 @@
         }
 
         .infoWrap {
-            margin: 60px 0;
+            margin: 60px 0 32px;
         }
 
         .infoWrap>div:nth-child(1) {
@@ -82,19 +84,19 @@
 
         .blockWrap {
             margin-bottom: 60px;
-            display: flex;
-            gap: 20px;
         }
 
         .blockWrap>div {
-            flex: 50%;
+            max-width: 500px;
+            padding: 32px 40px 80px;
+            width: 100%;
+            margin: auto;
             border: 1px solid #000000;
             border-radius: 20px;
-            padding: 32px 52px 80px;
             position: relative;
         }
 
-        .blockWrap>div>div {
+        .blockWrap > div > div {
             display: flex;
             flex-direction: column;
             margin-bottom: 20px;
@@ -112,13 +114,27 @@
             transform: translateX(-50%);
         }
 
+        .ProductWrap {
+            margin-bottom: 60px;
+        }
+        .ProductWrap .product {
+            border: 1px solid #7c7c7c;
+            border-radius: 12px;
+            padding: 20px 60px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
         .RecordWrap {
             margin-bottom: 60px;
         }
 
-        .RecordWrap>div:first-child {
+        .RecordWrap>div:first-child, .ProductWrap>div:first-child {
             font-weight: 700;
             font-size: 20px;
+            margin-bottom: 20px;
         }
 
         .subTitle {
@@ -148,7 +164,6 @@
         }
     </style>
 </head>
-
 <body>
     <div>
         <div class="infoWrap">
@@ -186,21 +201,28 @@
                 </div>
                 <button>Register</button>
             </div>
+        </div>
+        <div class="ProductWrap">
+            <div>List of auction products</div>
             <div>
-                <div class="subTitle">bidding</div>
-                <div>
-                    <div class="inputTitle">Bid amount</div>
-                    <input type="number" placeholder="Enter the bid amount" />
+                <div class="product" id="1" onclick="bidding(id)">
+                    <span>product name</span>
+                    <span>
+                        <span>min bidding :</span>
+                        <span>1 eth</span>
+                    </span>
                 </div>
-                <button>Bidding</button>
+                <div class="product" id="2" onclick="bidding(id)">
+                    <span>product name</span>
+                    <span>
+                        <span>min bidding :</span>
+                        <span>1 eth</span>
+                    </span>
+                </div>
             </div>
         </div>
         <div class="RecordWrap">
             <div>Check all auction records</div>
-            <div></div>
-        </div>
-        <div class="RecordWrap">
-            <div>Check my auction records</div>
             <div></div>
         </div>
     </div>
