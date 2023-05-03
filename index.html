@@ -1,20 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
     <script src='web3.min.js'></script>
+    <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
     <script type="text/javascript">
 
         async function registClick() {
+
             if (contractInstance != null) {
                 try {
                     let valproductName = document.getElementsByClassName('productName')[0].value
                     let valproductAmount = document.getElementsByClassName('productAmount')[0].value
                     let valproductTime = document.getElementsByClassName('productTime')[0].value
                     let value = await contractInstance.methods.registerProduct(valproductName, valproductAmount, valproductTime).send({ from: accounts[0] });
-                    
+
+                    // auction product list 에 동적 추가
+                    $('.ProductWrap > div:last-child').append(
+                        "<div class=\"product\" onclick=\"bidding()\">\n" +
+                            "<span>"+valproductName+"</span>\n" +
+                            "<span>\n" +
+                                "<span>min bidding :</span>\n" +
+                                "<span>"+valproductAmount+" eth</span>\n" +
+                            "</span>\n" +
+                        "</div>"
+                    );
+
                 } catch (e) {
                     console.log(e)
                 }
@@ -32,10 +44,21 @@
             }
         }
 
-        // bidding page로 이동
-        var bidding = function (number) {
-            location.href = "bidding.html?product=" + number;
-        };
+        // show bidding block
+        function bidding(number) {
+            let hiddenBlock = document.getElementById('main')
+            let showBlock = document.getElementById('bidding')
+            hiddenBlock.style.display = 'none';
+            showBlock.style.display = 'block';
+        }
+
+        // back to main block
+        function backToMain() {
+            let hiddenBlock = document.getElementById('bidding')
+            let showBlock = document.getElementById('main')
+            hiddenBlock.style.display = 'none';
+            showBlock.style.display = 'block';
+        }
 
         // wallet 연결
         async function connectWallet() {
@@ -348,7 +371,7 @@
             font-family: 'BookkMyungjo-Bd';
         }
 
-        body>div {
+        body > div {
             max-width: 1140px;
             margin: auto;
         }
@@ -410,7 +433,7 @@
             position: relative;
         }
 
-        .blockWrap>div>div {
+        .blockWrap > div > div {
             display: flex;
             flex-direction: column;
             margin-bottom: 20px;
@@ -453,10 +476,50 @@
             margin-bottom: 20px;
         }
 
-        .subTitle {
+        #main .subTitle {
             font-weight: 700;
             font-size: 20px;
             text-align: center;
+        }
+
+        #bidding .subTitle {
+            font-weight: 700;
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        #bidding {
+            display: none;
+            max-width: 500px;
+            width: 100%;
+            padding: 32px 40px;
+            border: 1px solid #000000;
+            border-radius: 20px;
+            margin: auto;
+        }
+
+        #bidding > div:first-child {
+            cursor: pointer;
+            margin-bottom: 32px;
+        }
+
+        #bidding input {
+            max-width: 360px;
+            width: 100%;
+        }
+
+        #bidding button {
+            all: unset;
+            cursor: pointer;
+            background-color: #D9D9D9;
+            border-radius: 36px;
+            padding: 8px 24px;
+            display: flex;
+            margin: 20px auto;
+        }
+
+        .productInfo  {
+            margin-bottom: 32px;
         }
 
         .inputTitle {
@@ -483,66 +546,91 @@
 
 <body>
     <div>
-        <div class="infoWrap">
-            <div>
-                Project Name : $$-Auction
-            </div>
-            <div>
-                Team Name: Sangwoo Pyo(20181704), Sanglim Nam(20191584)
-            </div>
-            <div>
-                <a href="">Project 1 Demo Video</a>
-            </div>
-            <div>
-                <button onclick="connectWallet()">connect account</button>
+        <div id="main">
+            <div class="infoWrap">
                 <div>
-                    <span>Address : </span>
-                    <span class="address"></span>
+                    Project Name : $$-Auction
                 </div>
+                <div>
+                    Team Name: Sangwoo Pyo(20181704), Sanglim Nam(20191584)
+                </div>
+                <div>
+                    <a href="">Project 1 Demo Video</a>
+                </div>
+                <div>
+                    <button onclick="connectWallet()">connect account</button>
+                    <div>
+                        <span>Address : </span>
+                        <span class="address"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="blockWrap">
+                <div>
+                    <div class="subTitle">Registering a Product</div>
+                    <div>
+                        <div class="inputTitle">Product Name</div>
+                        <input class="productName" type="text" placeholder="Enter the product name" />
+                    </div>
+                    <div>
+                        <div class="inputTitle">Minimum bid amount</div>
+                        <input class="productAmount" type="number" placeholder="Enter the minimum bid amount" />
+                    </div>
+                    <div>
+                        <div class="inputTitle">End time of auction</div>
+                        <input class="productTime" type="number" placeholder="Enter the end time of auction" />
+                    </div>
+                    <button onclick="registClick()">Register</button>
+                </div>
+            </div>
+            <div class="ProductWrap">
+                <div>List of auction products</div>
+                <div>
+                    <div class="product" onclick="bidding()">
+                        <span>product name</span>
+                        <span>
+                            <span>min bidding :</span>
+                            <span>1 eth</span>
+                        </span>
+                    </div>
+                    <div class="product" onclick="bidding()">
+                        <span>product name</span>
+                        <span>
+                            <span>min bidding :</span>
+                            <span>1 eth</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="RecordWrap">
+                <div>Check all auction records</div>
+                <div></div>
             </div>
         </div>
-        <div class="blockWrap">
-            <div>
-                <div class="subTitle">Registering a Product</div>
-                <div>
-                    <div class="inputTitle">Product Name</div>
-                    <input class="productName" type="text" placeholder="Enter the product name" />
+        <div id="bidding">
+            <div onclick="backToMain()">↪ back</div>
+            <div class="productInfo">
+                <div class="subTitle">
+                    <span>Product Name : </span>
+                    <span></span>
                 </div>
-                <div>
-                    <div class="inputTitle">Minimum bid amount</div>
-                    <input class="productAmount" type="number" placeholder="Enter the minimum bid amount" />
+                <div class="subTitle">
+                    <span>Minimum bidding amount : </span>
+                    <span></span>
                 </div>
-                <div>
-                    <div class="inputTitle">End time of auction</div>
-                    <input class="productTime" type="number" placeholder="Enter the end time of auction" />
-                </div>
-                <button onclick="registClick()">Register</button>
-            </div>
-        </div>
-        <div class="ProductWrap">
-            <div>List of auction products</div>
-            <div>
-                <div class="product" id="1" onclick="bidding(id)">
-                    <span>product name</span>
-                    <span>
-                        <span>min bidding :</span>
-                        <span>1 eth</span>
-                    </span>
-                </div>
-                <div class="product" id="2" onclick="bidding(id)">
-                    <span>product name</span>
-                    <span>
-                        <span>min bidding :</span>
-                        <span>1 eth</span>
-                    </span>
+                <div class="subTitle">
+                    <span>Current bidding amount : </span>
+                    <span></span>
                 </div>
             </div>
-        </div>
-        <div class="RecordWrap">
-            <div>Check all auction records</div>
-            <div></div>
+            <div>
+                <div>
+                    <div class="inputTitle">Bid amount</div>
+                    <input type="number" placeholder="Enter the bid amount" />
+                </div>
+                <button>Bidding</button>
+            </div>
         </div>
     </div>
 </body>
-
 </html>
