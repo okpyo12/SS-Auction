@@ -1,32 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
     <script src='web3.min.js'></script>
     <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
     <script type="text/javascript">
+        var accounts;
+        var contractInstance;
+        var productId = 0;
+        var currentProductId;
 
         async function registClick() {
+            if (accounts == null) {
+                alert("계정을 연결해주세요")
+            }
 
             if (contractInstance != null) {
                 try {
                     let valproductName = document.getElementsByClassName('productName')[0].value
                     let valproductAmount = document.getElementsByClassName('productAmount')[0].value
                     let valproductTime = document.getElementsByClassName('productTime')[0].value
-                    let value = await contractInstance.methods.registerProduct(valproductName, valproductAmount, valproductTime).send({ from: accounts[0] });
 
-                    // auction product list 에 동적 추가
-                    $('.ProductWrap > div:last-child').append(
-                        "<div class=\"product\" onclick=\"bidding()\">\n" +
-                            "<span>"+valproductName+"</span>\n" +
+                    if (valproductName == '' | valproductAmount == '' | valproductTime == '') {
+                        alert("모든 정보를 입력해주세요")
+                    } else {
+                        let value = await contractInstance.methods.registerProduct(valproductName, valproductAmount, valproductTime).send({ from: accounts[0] });
+
+                        // auction product list 에 동적 추가
+                        $('.ProductWrap > div:last-child').append(
+                            "<div class=\"product\" id=" + productId + "  onclick=\"bidding(id)\">\n" +
+                            "<span>" + valproductName + "</span>\n" +
                             "<span>\n" +
-                                "<span>min bidding :</span>\n" +
-                                "<span>"+valproductAmount+" eth</span>\n" +
+                            "<span>min bidding :</span>\n" +
+                            "<span>" + valproductAmount + " eth</span>\n" +
                             "</span>\n" +
-                        "</div>"
-                    );
-
+                            "</div>"
+                        );
+                        productId++;
+                    }
                 } catch (e) {
                     console.log(e)
                 }
@@ -37,7 +50,37 @@
             if (contractInstance != null) {
                 try {
                     let valbidAmount = document.getElementsByClassName('bidAmount')[0].value
-                    let value = await contractInstance.methods.registerProduct(valbidAmount).send({ from: accounts[0] });
+                    let value = await contractInstance.methods.bid(currentProductId).send({ from: accounts[0], value: valbidAmount });
+                    let productValue = await contractInstance.methods.getProduct(currentProductId).call()
+                    let showCurBid = document.getElementsByClassName('bidCurBid')[0]
+                    showCurBid.innerHTML = productValue[5]
+                } catch (e) {
+                    console.log(e)
+                }
+            }
+        }
+
+        async function getProductInfo() {
+            if (contractInstance != null) {
+                try {
+                    let productValue = await contractInstance.methods.getProduct(currentProductId).call()
+                    let showProductName = document.getElementsByClassName('bidProductName')[0]
+                    let showMinBid = document.getElementsByClassName('bidMinBid')[0]
+                    let showCurBid = document.getElementsByClassName('bidCurBid')[0]
+                    let showTimeLimit = document.getElementsByClassName('bidTimeLimit')[0]
+                    showProductName.innerHTML = productValue[0]
+                    showMinBid.innerHTML = productValue[1]
+                    showCurBid.innerHTML = productValue[5]
+                } catch (e) {
+                    console.log(e)
+                }
+            }
+        }
+
+        async function endAuction() {
+            if (contractInstance != null) {
+                try {
+                    let value = await contractInstance.methods.endAuction(currentProductId).send({ from: accounts[0] });
                 } catch (e) {
                     console.log(e)
                 }
@@ -46,6 +89,8 @@
 
         // show bidding block
         function bidding(number) {
+            currentProductId = number;
+            getProductInfo()
             let hiddenBlock = document.getElementById('main')
             let showBlock = document.getElementById('bidding')
             hiddenBlock.style.display = 'none';
@@ -354,7 +399,7 @@
                     "type": "function"
                 }
             ];
-            var address = "0x46E0F49191E82146135638b3ECE00eDE03317047";
+            var address = "0x2272dD11daF692236D592fEc35D05F7F6b99e9c2";
             window.web3 = new Web3(window.ethereum);
             contractInstance = await new window.web3.eth.Contract(abiobj, address);
         }
@@ -371,7 +416,7 @@
             font-family: 'BookkMyungjo-Bd';
         }
 
-        body > div {
+        body>div {
             max-width: 1140px;
             margin: auto;
         }
@@ -433,7 +478,7 @@
             position: relative;
         }
 
-        .blockWrap > div > div {
+        .blockWrap>div>div {
             display: flex;
             flex-direction: column;
             margin-bottom: 20px;
@@ -498,7 +543,7 @@
             margin: auto;
         }
 
-        #bidding > div:first-child {
+        #bidding>div:first-child {
             cursor: pointer;
             margin-bottom: 32px;
         }
@@ -518,7 +563,7 @@
             margin: 20px auto;
         }
 
-        .productInfo  {
+        .productInfo {
             margin-bottom: 32px;
         }
 
@@ -573,11 +618,11 @@
                         <input class="productName" type="text" placeholder="Enter the product name" />
                     </div>
                     <div>
-                        <div class="inputTitle">Minimum bid amount</div>
+                        <div class="inputTitle">Minimum bid amount(ether)</div>
                         <input class="productAmount" type="number" placeholder="Enter the minimum bid amount" />
                     </div>
                     <div>
-                        <div class="inputTitle">End time of auction</div>
+                        <div class="inputTitle">End time of auction(second)</div>
                         <input class="productTime" type="number" placeholder="Enter the end time of auction" />
                     </div>
                     <button onclick="registClick()">Register</button>
@@ -586,20 +631,7 @@
             <div class="ProductWrap">
                 <div>List of auction products</div>
                 <div>
-                    <div class="product" onclick="bidding()">
-                        <span>product name</span>
-                        <span>
-                            <span>min bidding :</span>
-                            <span>1 eth</span>
-                        </span>
-                    </div>
-                    <div class="product" onclick="bidding()">
-                        <span>product name</span>
-                        <span>
-                            <span>min bidding :</span>
-                            <span>1 eth</span>
-                        </span>
-                    </div>
+
                 </div>
             </div>
             <div class="RecordWrap">
@@ -612,25 +644,33 @@
             <div class="productInfo">
                 <div class="subTitle">
                     <span>Product Name : </span>
-                    <span></span>
+                    <span class="bidProductName"></span>
                 </div>
                 <div class="subTitle">
                     <span>Minimum bidding amount : </span>
-                    <span></span>
+                    <span class="bidMinBid"></span>
                 </div>
                 <div class="subTitle">
                     <span>Current bidding amount : </span>
-                    <span></span>
+                    <span class="bidCurBid"></span>
+                </div>
+                <div class="subTitle">
+                    <span>Time Limit : </span>
+                    <span class="bidTimeLimit"></span>
                 </div>
             </div>
             <div>
                 <div>
                     <div class="inputTitle">Bid amount</div>
-                    <input type="number" placeholder="Enter the bid amount" />
+                    <input class="bidAmount" type="number" placeholder="Enter the bid amount" />
                 </div>
-                <button>Bidding</button>
+                <button onclick="bidClick()">Bidding</button>
+                <div>
+                    <button onclick="endAuction()">End This Autcion</button>
+                </div>
             </div>
         </div>
     </div>
 </body>
+
 </html>
