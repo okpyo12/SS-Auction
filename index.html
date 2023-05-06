@@ -87,6 +87,19 @@
             }
         }
 
+        // handle count down
+        function CountNumber() {
+            let count = document.getElementById('countNum').innerText;
+            var timeleft = count;
+            var downloadTimer = setInterval(function(){
+                if(timeleft <= 1){
+                    clearInterval(downloadTimer);
+                }
+                document.getElementById("countNum").innerText = timeleft - 1;
+                timeleft -= 1;
+            }, 1000);
+        }
+
         // show bidding block
         function bidding(number) {
             currentProductId = number;
@@ -399,7 +412,7 @@
                     "type": "function"
                 }
             ];
-            var address = "0x2272dD11daF692236D592fEc35D05F7F6b99e9c2";
+            var address = "0xd9145CCE52D386f254917e481eB44e9943F39138";
             window.web3 = new Web3(window.ethereum);
             contractInstance = await new window.web3.eth.Contract(abiobj, address);
         }
@@ -628,6 +641,7 @@
                     <button onclick="registClick()">Register</button>
                 </div>
             </div>
+            <div id="countNum" onclick="CountNumber()">60</div> <!--count down test tag-->
             <div class="ProductWrap">
                 <div>List of auction products</div>
                 <div>
