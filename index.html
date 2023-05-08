@@ -152,6 +152,20 @@
         }
         ***/
 
+        // button 클릭 시 1초씩 증가
+        function handleDate() {
+            const check = 10; // 입력한 초
+            let tmp = 1;
+            var downloadTimer = setInterval(function(){
+                if(tmp >= check){
+                    clearInterval(downloadTimer);
+                    // 시간 다 지나면 버튼 보여지도록 코드 작성
+                }
+                console.log(new Date(parseInt(tmp) * 1000).toLocaleString())
+                tmp += 1;
+            }, 1000);
+        }
+
         // show bidding block
         function bidding(number) {
             let ele = this.document.getElementById(number).parentElement.parentElement;
@@ -733,7 +747,7 @@
             </div>
 <!--            <div id="countNum" onclick="CountNumber()">5</div>-->
 <!--            <div class="testBlock">-->
-            </div>
+            <button onclick="handleDate()">check the time. You can check it from the console</button>
             <div class="ProductWrap">
                 <div>List of auction products</div>
                 <div>
