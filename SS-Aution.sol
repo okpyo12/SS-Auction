@@ -34,7 +34,7 @@ contract Auction {
     // 경매 상품 등록 함수
     function registerProduct(string memory _name, uint256 _price, uint256 _auctionEnd) public {
         uint256 productId = products.length;
-        products.push(Product(_name,  _price * (10 ** 18), msg.sender, false, payable(address(0)), 0));
+        products.push(Product(_name,  _price, msg.sender, false, payable(address(0)), 0));
         auctionInfo[productId] = AuctionInfo(payable(msg.sender), block.timestamp+_auctionEnd, false);
         emit NewProduct(productId);
     }
@@ -51,7 +51,7 @@ contract Auction {
             product.bidder.transfer(product.bid);
         }
         product.bidder = payable(msg.sender);
-        product.bid = msg.value * (10 ** 18);
+        product.bid = msg.value;
         emit AuctionEnded(_productId, msg.sender, msg.value);
     }
     
