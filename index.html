@@ -86,6 +86,7 @@
                 try {
                     let auctionValues = await contractInstance.methods.endAuction(currentProductId).send({ from: accounts[0] });
                     let item = document.getElementById(currentProductId);
+                    backToMain();
                     $('.RecordWrap > div:last-child').append(item);
                 } catch (e) {
                     console.log(e)
@@ -96,7 +97,7 @@
         async function getAuctions() {
             const showAccount = document.querySelector('.address')
 
-            if (showAccount.innerHTML == '') {
+            if (showAccount.innerHTML == null) {
                 if (contractInstance != null) {
                     try {
                         let auctionValues = await contractInstance.methods.getAuctions().call()
