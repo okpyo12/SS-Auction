@@ -94,38 +94,42 @@
         }
 
         async function getAuctions() {
-            if (contractInstance != null) {
-                try {
-                    let auctionValues = await contractInstance.methods.getAuctions().call()
-                    for (var i = 0; i < auctionValues.length; i++) {
-                        let productValue = await contractInstance.methods.getProduct(i).call()
-                        if (auctionValues[i][2] == false) {
-                            $('.ProductWrap > div:last-child').append(
-                                "<div class=\"product\" id=" + productId + "  onclick=\"bidding(id)\">\n" +
-                                "<span>" + productValue[0] + "</span>\n" +
-                                "<span>\n" +
-                                "<span>min bidding :</span>\n" +
-                                "<span>" + productValue[1] + " eth</span>\n" +
-                                "</span>\n" +
-                                "</div>"
-                            );
-                            productId++;
+            const showAccount = document.querySelector('.address')
+
+            if (showAccount.innerHTML == '') {
+                if (contractInstance != null) {
+                    try {
+                        let auctionValues = await contractInstance.methods.getAuctions().call()
+                        for (var i = 0; i < auctionValues.length; i++) {
+                            let productValue = await contractInstance.methods.getProduct(i).call()
+                            if (auctionValues[i][2] == false) {
+                                $('.ProductWrap > div:last-child').append(
+                                    "<div class=\"product\" id=" + productId + "  onclick=\"bidding(id)\">\n" +
+                                    "<span>" + productValue[0] + "</span>\n" +
+                                    "<span>\n" +
+                                    "<span>min bidding :</span>\n" +
+                                    "<span>" + productValue[1] + " eth</span>\n" +
+                                    "</span>\n" +
+                                    "</div>"
+                                );
+                                productId++;
+                            }
+                            else {
+                                $('.RecordWrap > div:last-child').append(
+                                    "<div class=\"product\" id=" + endproductId + "  onclick=\"bidding(id)\">\n" +
+                                    "<span>" + productValue[0] + "</span>\n" +
+                                    "<span>\n" +
+                                    "<span>min bidding :</span>\n" +
+                                    "<span>" + productValue[1] + " eth</span>\n" +
+                                    "</span>\n" +
+                                    "</div>"
+                                );
+                                endproductId++;
+                            }
                         }
-                        else {
-                            $('.RecordWrap > div:last-child').append(
-                                "<div class=\"product\" id=" + endproductId + "  onclick=\"bidding(id)\">\n" +
-                                "<span>" + productValue[0] + "</span>\n" +
-                                "<span>\n" +
-                                "<span>min bidding :</span>\n" +
-                                "<span>" + productValue[1] + " eth</span>\n" +
-                                "</span>\n" +
-                                "</div>"
-                            );
-                            endproductId++;
-                        }
+                    } catch (e) {
+                        console.log(e)
                     }
-                } catch (e) {
-                    console.log(e)
                 }
             }
         }
@@ -163,8 +167,6 @@
             hiddenBlock.style.display = 'none';
             showBlock.style.display = 'block';
         }
-
-
 
         // wallet 연결
         async function connectWallet() {
