@@ -10,6 +10,7 @@
         var accounts;
         var contractInstance;
         var productId = 0;
+        var endproductId = 0;
         var currentProductId;
 
         async function registClick() {
@@ -65,6 +66,7 @@
             if (contractInstance != null) {
                 try {
                     let productValue = await contractInstance.methods.getProduct(currentProductId).call()
+                    let auctionValue = await contractInstance.methods.getAuction(currentProductId).call()
                     let showProductName = document.getElementsByClassName('bidProductName')[0]
                     let showMinBid = document.getElementsByClassName('bidMinBid')[0]
                     let showCurBid = document.getElementsByClassName('bidCurBid')[0]
@@ -72,6 +74,9 @@
                     showProductName.innerHTML = productValue[0]
                     showMinBid.innerHTML = productValue[1]
                     showCurBid.innerHTML = productValue[5]
+                    const date = new Date(parseInt(auctionValue[1]) * 1000); // 유닉스 시간을 밀리초 단위로 변환하여 Date 객체 생성
+                    const now = date.toLocaleString(); // 현재 시간으로 변환
+                    showTimeLimit.innerHTML = now
                 } catch (e) {
                     console.log(e)
                 }
@@ -81,7 +86,44 @@
         async function endAuction() {
             if (contractInstance != null) {
                 try {
-                    let value = await contractInstance.methods.endAuction(currentProductId).send({ from: accounts[0] });
+                    let auctionValues = await contractInstance.methods.endAuction(currentProductId).send({ from: accounts[0] });
+                } catch (e) {
+                    console.log(e)
+                }
+            }
+        }
+
+        async function getAuctions() {
+            if (contractInstance != null) {
+                try {
+                    let auctionValues = await contractInstance.methods.getAuctions().call()
+                    for (var i = 0; i < auctionValues.length; i++) {
+                        let productValue = await contractInstance.methods.getProduct(i).call()
+                        if (auctionValues[i][2] == false) {
+                            $('.ProductWrap > div:last-child').append(
+                                "<div class=\"product\" id=" + productId + "  onclick=\"bidding(id)\">\n" +
+                                "<span>" + productValue[0] + "</span>\n" +
+                                "<span>\n" +
+                                "<span>min bidding :</span>\n" +
+                                "<span>" + productValue[1] + " eth</span>\n" +
+                                "</span>\n" +
+                                "</div>"
+                            );
+                            productId++;
+                        }
+                        else {
+                            $('.RecordWrap > div:last-child').append(
+                                "<div class=\"product\" id=" + endproductId + "  onclick=\"bidding(id)\">\n" +
+                                "<span>" + productValue[0] + "</span>\n" +
+                                "<span>\n" +
+                                "<span>min bidding :</span>\n" +
+                                "<span>" + productValue[1] + " eth</span>\n" +
+                                "</span>\n" +
+                                "</div>"
+                            );
+                            endproductId++;
+                        }
+                    }
                 } catch (e) {
                     console.log(e)
                 }
@@ -89,11 +131,11 @@
         }
 
         // handle count down
-        function CountNumber() {
-            let count = document.getElementById('countNum').innerText;
+        function CountNumber(count) {
+            //let count = document.getElementById('countNum').innerText;
             var timeleft = count;
-            var downloadTimer = setInterval(function(){
-                if(timeleft <= 1){
+            var downloadTimer = setInterval(function () {
+                if (timeleft <= 1) {
                     clearInterval(downloadTimer);
                     // 아래 item에는 time-out 된 요소 넣기, 현재 테스트를 위해 0번 id를 넣어둠
                     let item = document.getElementById('0');
@@ -121,6 +163,8 @@
             hiddenBlock.style.display = 'none';
             showBlock.style.display = 'block';
         }
+
+
 
         // wallet 연결
         async function connectWallet() {
@@ -162,6 +206,48 @@
                     "type": "event"
                 },
                 {
+                    "anonymous": false,
+                    "inputs": [
+                        {
+                            "indexed": false,
+                            "internalType": "uint256",
+                            "name": "productId",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "NewProduct",
+                    "type": "event"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "auctionInfo",
+                    "outputs": [
+                        {
+                            "internalType": "address payable",
+                            "name": "beneficiary",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "auctionEnd",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "bool",
+                            "name": "ended",
+                            "type": "bool"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
                     "inputs": [
                         {
                             "internalType": "uint256",
@@ -188,64 +274,28 @@
                     "type": "function"
                 },
                 {
-                    "anonymous": false,
-                    "inputs": [
-                        {
-                            "indexed": false,
-                            "internalType": "uint256",
-                            "name": "productId",
-                            "type": "uint256"
-                        }
-                    ],
-                    "name": "NewProduct",
-                    "type": "event"
-                },
-                {
-                    "inputs": [
-                        {
-                            "internalType": "string",
-                            "name": "_name",
-                            "type": "string"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "_price",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "_auctionEnd",
-                            "type": "uint256"
-                        }
-                    ],
-                    "name": "registerProduct",
-                    "outputs": [],
-                    "stateMutability": "nonpayable",
-                    "type": "function"
-                },
-                {
                     "inputs": [
                         {
                             "internalType": "uint256",
-                            "name": "",
+                            "name": "_auctionId",
                             "type": "uint256"
                         }
                     ],
-                    "name": "auctionInfo",
+                    "name": "getAuction",
                     "outputs": [
                         {
                             "internalType": "address payable",
-                            "name": "beneficiary",
+                            "name": "",
                             "type": "address"
                         },
                         {
                             "internalType": "uint256",
-                            "name": "auctionEnd",
+                            "name": "",
                             "type": "uint256"
                         },
                         {
                             "internalType": "bool",
-                            "name": "ended",
+                            "name": "",
                             "type": "bool"
                         }
                     ],
@@ -414,11 +464,35 @@
                     ],
                     "stateMutability": "view",
                     "type": "function"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "string",
+                            "name": "_name",
+                            "type": "string"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "_price",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "_auctionEnd",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "registerProduct",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
                 }
             ];
-            var address = "0xd9145CCE52D386f254917e481eB44e9943F39138";
+            var address = "0xf8C2e49d6bED2Af750BCc8e362c6f4679DAA509f";
             window.web3 = new Web3(window.ethereum);
             contractInstance = await new window.web3.eth.Contract(abiobj, address);
+            getAuctions()
         }
     </script>
     <style>
@@ -517,7 +591,8 @@
             margin-bottom: 60px;
         }
 
-        .ProductWrap .product, .RecordWrap > div:last-child > div {
+        .ProductWrap .product,
+        .RecordWrap>div:last-child>div {
             border: 1px solid #7c7c7c;
             border-radius: 12px;
             padding: 20px 60px;
@@ -645,7 +720,7 @@
                     <button onclick="registClick()">Register</button>
                 </div>
             </div>
-            <div id="countNum" onclick="CountNumber()">5</div> <!--count down test tag-->
+            <!-- <div id="countNum" onclick="CountNumber()">30</div> count down test tag -->
             <div class="ProductWrap">
                 <div>List of auction products</div>
                 <div>
