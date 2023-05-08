@@ -135,21 +135,22 @@
             }
         }
 
+        /***
         // handle count down
-        function CountNumber(count) {
-            //let count = document.getElementById('countNum').innerText;
+        function CountNumber() {
+            let count = document.getElementById('countNum').innerText;
             var timeleft = count;
-            var downloadTimer = setInterval(function () {
-                if (timeleft <= 1) {
+            var downloadTimer = setInterval(function(){
+                if(timeleft <= 1){
                     clearInterval(downloadTimer);
-                    // 아래 item에는 time-out 된 요소 넣기, 현재 테스트를 위해 0번 id를 넣어둠
-                    let item = document.getElementById('0');
-                    $('.RecordWrap > div:last-child').append(item);
+                    console.log('zero !')
+                    $('.testBlock').append("<button onclick=\"alert('hi')\">까꿍</button>");
                 }
                 document.getElementById("countNum").innerText = timeleft - 1;
                 timeleft -= 1;
             }, 1000);
         }
+        ***/
 
         // show bidding block
         function bidding(number) {
@@ -730,7 +731,9 @@
                     <button onclick="registClick()">Register</button>
                 </div>
             </div>
-            <!-- <div id="countNum" onclick="CountNumber()">30</div> count down test tag -->
+<!--            <div id="countNum" onclick="CountNumber()">5</div>-->
+<!--            <div class="testBlock">-->
+            </div>
             <div class="ProductWrap">
                 <div>List of auction products</div>
                 <div>
