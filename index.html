@@ -28,7 +28,7 @@
                     if (valproductName == '' | valproductAmount == '' | valproductTime == '') {
                         alert("모든 정보를 입력해주세요")
                     } else {
-                        let value = await contractInstance.methods.registerProduct(valproductName, valproductAmount, valproductTime).send({ from: accounts[0] });
+                        let value = await contractInstance.methods.registerProduct(valproductName, valproductAmount.toLocaleString(), valproductTime).send({ from: accounts[0] });
 
                         // auction product list 에 동적 추가
                         $('.ProductWrap > div:last-child').append(
@@ -72,7 +72,7 @@
                     let showCurBid = document.getElementsByClassName('bidCurBid')[0]
                     let showTimeLimit = document.getElementsByClassName('bidTimeLimit')[0]
                     showProductName.innerHTML = productValue[0]
-                    showMinBid.innerHTML = productValue[1]
+                    showMinBid.innerHTML = productValue[1] / (10 ** 18)
                     showCurBid.innerHTML = productValue[5]
                     const date = new Date(parseInt(auctionValue[1]) * 1000); // 유닉스 시간을 밀리초 단위로 변환하여 Date 객체 생성
                     const now = date.toLocaleString(); // 현재 시간으로 변환
@@ -108,7 +108,7 @@
                                     "<span>" + productValue[0] + "</span>\n" +
                                     "<span>\n" +
                                     "<span>min bidding :</span>\n" +
-                                    "<span>" + productValue[1] + " eth</span>\n" +
+                                    "<span>" + productValue[1] / (10 ** 18) + " eth</span>\n" +
                                     "</span>\n" +
                                     "</div>"
                                 );
@@ -120,7 +120,7 @@
                                     "<span>" + productValue[0] + "</span>\n" +
                                     "<span>\n" +
                                     "<span>min bidding :</span>\n" +
-                                    "<span>" + productValue[1] + " eth</span>\n" +
+                                    "<span>" + productValue[1] / (10 ** 18) + " eth</span>\n" +
                                     "</span>\n" +
                                     "</div>"
                                 );
@@ -491,7 +491,7 @@
                     "type": "function"
                 }
             ];
-            var address = "0xf8C2e49d6bED2Af750BCc8e362c6f4679DAA509f";
+            var address = "0x4feCfF7C8B32916bfDd6c1DCf3B301e020079b23";
             window.web3 = new Web3(window.ethereum);
             contractInstance = await new window.web3.eth.Contract(abiobj, address);
             getAuctions()
@@ -742,7 +742,7 @@
                     <span class="bidProductName"></span>
                 </div>
                 <div class="subTitle">
-                    <span>Minimum bidding amount : </span>
+                    <span>Minimum bidding amount(ether) : </span>
                     <span class="bidMinBid"></span>
                 </div>
                 <div class="subTitle">

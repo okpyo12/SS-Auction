@@ -34,7 +34,7 @@ contract Auction {
     // 경매 상품 등록 함수
     function registerProduct(string memory _name, uint256 _price, uint256 _auctionEnd) public {
         uint256 productId = products.length;
-        products.push(Product(_name, _price, msg.sender, false, payable(address(0)), 0));
+        products.push(Product(_name,  _price * (10 ** 18), msg.sender, false, payable(address(0)), 0));
         auctionInfo[productId] = AuctionInfo(payable(msg.sender), block.timestamp+_auctionEnd, false);
         emit NewProduct(productId);
     }
@@ -45,12 +45,13 @@ contract Auction {
 		AuctionInfo storage auction = auctionInfo[_productId];
         require(product.sold == false, "The product has already been sold.");
         require(block.timestamp < auctionInfo[_productId].auctionEnd, "The auction has already ended.");
+        require(msg.value > product.price, "The bid must be higher than the start price.");
         require(msg.value > product.bid, "The bid must be higher than the current bid.");
         if (product.bid > 0) {
             product.bidder.transfer(product.bid);
         }
         product.bidder = payable(msg.sender);
-        product.bid = msg.value;
+        product.bid = msg.value * (10 ** 18);
         emit AuctionEnded(_productId, msg.sender, msg.value);
     }
     
@@ -73,6 +74,11 @@ contract Auction {
             auctions[i] = auctionInfo[i];
         }
         return auctions;
+    }
+
+    function getAuction(uint256 _auctionId) public view returns (address payable, uint256, bool) {
+        AuctionInfo storage auction = auctionInfo[_auctionId];
+        return (auction.beneficiary, auction.auctionEnd, auction.ended);
     }
 
     //물건 확인 함수
