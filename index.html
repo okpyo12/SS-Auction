@@ -85,6 +85,8 @@
             if (contractInstance != null) {
                 try {
                     let auctionValues = await contractInstance.methods.endAuction(currentProductId).send({ from: accounts[0] });
+                    let item = document.getElementById(currentProductId);
+                    $('.RecordWrap > div:last-child').append(item);
                 } catch (e) {
                     console.log(e)
                 }
@@ -489,7 +491,7 @@
                     "type": "function"
                 }
             ];
-            var address = "0xDa2626cf6334d2fafA51f698E74d2d8CED08bf28";
+            var address = "0x9c97B22eEC65566Ad094ee703df2a5aF431DCc1c";
             window.web3 = new Web3(window.ethereum);
             contractInstance = await new window.web3.eth.Contract(abiobj, address);
             getAuctions()
