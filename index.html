@@ -153,6 +153,13 @@
 
         // show bidding block
         function bidding(number) {
+            let ele = this.document.getElementById(number).parentElement.parentElement;
+
+            // 종료된 경매의 경우 bidding 창으로 넘어가지 않도록
+            if(ele.classList.contains('RecordWrap')){
+                return;
+            }
+
             currentProductId = number;
             getProductInfo()
             let hiddenBlock = document.getElementById('main')
