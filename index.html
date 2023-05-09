@@ -60,7 +60,7 @@
                     alert("입찰이 성공적으로 진행되었습니다.");
                     document.getElementsByClassName('bidAmount')[0].value = '';
                 } catch (e) {
-                    alert('진행중인 경매가 아닙니다. 시간을 확인해주세요.');
+                    alert('입찰에 실패했습니다.');
                 }
             }
         }
@@ -94,7 +94,7 @@
                     backToMain();
                     $('.RecordWrap > div:last-child').append(item);
                 } catch (e) {
-                    alert("경매 종료 시간이 아닙니다.");
+                    alert("입찰이 불가능합니다.");
                 }
             }
         }
@@ -499,7 +499,7 @@
                     "type": "function"
                 }
             ];
-            var address = "0x916b04984bcea09F9E10ecc0687e2144559B4179";
+            var address = "0x9Cd568A0D0b2963B694F6Bb82dC693a353be0750";
             window.web3 = new Web3(window.ethereum);
             contractInstance = await new window.web3.eth.Contract(abiobj, address);
             getAuctions()
@@ -743,7 +743,7 @@
                     Team Name: Sangwoo Pyo(20181704), Sanglim Nam(20191584)
                 </div>
                 <div>
-                    <a href="">Project 1 Demo Video</a>
+                    <a href="https://youtu.be/CmO15QmHagA" target="_blank">Project 1 Demo Video</a>
                 </div>
                 <div>
                     <button onclick="connectWallet()">connect account</button>
