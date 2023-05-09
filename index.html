@@ -144,8 +144,21 @@
             }, 1000);
         }
 
-        function checkRecord() {
-            console.log('check detail')
+        async function checkRecord() {
+            if (contractInstance != null) {
+                try {
+                    console.log(currentProductId)
+                    let productValue = await contractInstance.methods.getProduct(currentProductId).call()
+                    let showEndProductName = document.getElementsByClassName('endName')[0]
+                    let showEndAddress = document.getElementsByClassName('endAddress')[0]
+                    let showEndBid = document.getElementsByClassName('endAmount')[0]
+                    showEndProductName.innerHTML = productValue[0]
+                    showEndAddress.innerHTML = productValue[2]
+                    showEndBid.innerHTML = productValue[5] / (10 ** 18)
+                } catch (e) {
+                    console.log(e)
+                }
+            }
             let showBlock = document.getElementById('detailRecord')
             showBlock.style.display = 'flex';
         }
@@ -159,14 +172,13 @@
         // show bidding block
         function bidding(number) {
             let ele = this.document.getElementById(number).parentElement.parentElement;
-
+            currentProductId = number;
             // 종료된 경매의 경우 bidding 창으로 넘어가지 않도록
             if (ele.classList.contains('RecordWrap')) {
                 checkRecord();
                 return;
             }
             handleDate();
-            currentProductId = number;
             getProductInfo()
             let hiddenBlock = document.getElementById('main')
             let showBlock = document.getElementById('bidding')
@@ -520,7 +532,7 @@
                     "type": "function"
                 }
             ];
-            var address = "0x8955a8E8477683fa5C0D0A64112f2761a1FcF309";
+            var address = "0x1c59dE8B68b3Ba21a512A8bF6b1F988Cc3c5a96B";
             window.web3 = new Web3(window.ethereum);
             contractInstance = await new window.web3.eth.Contract(abiobj, address);
             getAuctions()
@@ -650,7 +662,8 @@
             text-align: center;
         }
 
-        #bidding .subTitle, #detailRecord .inputTitle {
+        #bidding .subTitle,
+        #detailRecord .inputTitle {
             font-weight: 700;
             font-size: 20px;
             margin-bottom: 8px;
@@ -693,19 +706,19 @@
             top: 0;
             inset: 0;
             height: 100vh;
-            display: flex;
+            display: none;
             justify-content: center;
             align-items: center;
         }
 
-        #detailRecord > div {
+        #detailRecord>div {
             background-color: #ffffff;
             border-radius: 12px;
             max-width: 768px;
             padding: 40px;
         }
 
-        #detailRecord > div >div {
+        #detailRecord>div>div {
             margin-bottom: 20px;
         }
 
@@ -841,15 +854,16 @@
             <div>
                 <div>
                     <div class="inputTitle">★ 경매 물품</div>
-                    <span>상우오빠의 노트북</span>
+                    <span class="endName"></span>
                 </div>
                 <div>
                     <div class="inputTitle">★ 낙찰 주소</div>
-                    <span>0xd1afD9Bd5e4C2E10A331450566BFa6F4F20FaEB0</span>
+                    <span class="endAddress"></span>
                 </div>
                 <div>
                     <div class="inputTitle">★ 낙찰 금액</div>
-                    <span>5 ether</span>
+                    <span class="endAmount"></span>
+                    <span> ether</span>
                 </div>
                 <button onclick="closeDetail()">닫기</button>
             </div>

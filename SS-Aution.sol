@@ -12,7 +12,7 @@ contract Auction {
         bool sold;      // 판매 여부
         address payable bidder; // 입찰자 주소
         uint256 bid;    // 현재 최고 입찰가
-        uint256 timelimit;    // 현재 최고 입찰가
+        uint256 timelimit;    // 경매 제한 시간
     }
 
     // 경매 진행 정보
