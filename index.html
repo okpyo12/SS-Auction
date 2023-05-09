@@ -55,7 +55,7 @@
                     let showCurBid = document.getElementsByClassName('bidCurBid')[0]
                     showCurBid.innerHTML = productValue[5] / (10 ** 18)
                 } catch (e) {
-                    console.log(e)
+                    alert('진행중인 경매가 아닙니다. 시간을 확인해주세요.');
                 }
             }
         }
@@ -89,7 +89,7 @@
                     backToMain();
                     $('.RecordWrap > div:last-child').append(item);
                 } catch (e) {
-                    console.log(e)
+                    alert("경매 종료 시간이 아닙니다.");
                 }
             }
         }
@@ -144,12 +144,25 @@
             }, 1000);
         }
 
+        function checkRecord() {
+            console.log('check detail')
+            let showBlock = document.getElementById('detailRecord')
+            showBlock.style.display = 'flex';
+        }
+
+        function closeDetail() {
+            let showBlock = document.getElementById('detailRecord')
+            showBlock.style.display = 'none';
+        }
+
+
         // show bidding block
         function bidding(number) {
             let ele = this.document.getElementById(number).parentElement.parentElement;
 
             // 종료된 경매의 경우 bidding 창으로 넘어가지 않도록
             if (ele.classList.contains('RecordWrap')) {
+                checkRecord();
                 return;
             }
             handleDate();
@@ -637,7 +650,7 @@
             text-align: center;
         }
 
-        #bidding .subTitle {
+        #bidding .subTitle, #detailRecord .inputTitle {
             font-weight: 700;
             font-size: 20px;
             margin-bottom: 8px;
@@ -672,6 +685,46 @@
             display: flex;
             margin: 20px auto;
         }
+
+        #detailRecord {
+            z-index: 99;
+            background: rgba(0, 0, 0, 0.5);
+            position: fixed;
+            top: 0;
+            inset: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #detailRecord > div {
+            background-color: #ffffff;
+            border-radius: 12px;
+            max-width: 768px;
+            padding: 40px;
+        }
+
+        #detailRecord > div >div {
+            margin-bottom: 20px;
+        }
+
+        #detailRecord button {
+            all: unset;
+            cursor: pointer;
+            border-radius: 20px;
+            border: 2px solid #141414;
+            padding: 2px 8px;
+            margin-top: 20px;
+        }
+
+        #detailRecord span {
+            font-weight: 700;
+            font-size: 22px;
+            color: #141414;
+            padding-bottom: 20px;
+        }
+
 
         .productInfo {
             margin-bottom: 32px;
@@ -738,9 +791,6 @@
                     <button onclick="registClick()">Register</button>
                 </div>
             </div>
-            <!--            <div id="countNum" onclick="CountNumber()">5</div>-->
-            <!--            <div class="testBlock">-->
-            <button onclick="handleDate()">check the time. You can check it from the console</button>
             <div class="ProductWrap">
                 <div>List of auction products</div>
                 <div>
@@ -785,6 +835,23 @@
                 <div>
                     <button onclick="endAuction()">End This Autcion</button>
                 </div>
+            </div>
+        </div>
+        <div id="detailRecord">
+            <div>
+                <div>
+                    <div class="inputTitle">★ 경매 물품</div>
+                    <span>상우오빠의 노트북</span>
+                </div>
+                <div>
+                    <div class="inputTitle">★ 낙찰 주소</div>
+                    <span>0xd1afD9Bd5e4C2E10A331450566BFa6F4F20FaEB0</span>
+                </div>
+                <div>
+                    <div class="inputTitle">★ 낙찰 금액</div>
+                    <span>5 ether</span>
+                </div>
+                <button onclick="closeDetail()">닫기</button>
             </div>
         </div>
     </div>
