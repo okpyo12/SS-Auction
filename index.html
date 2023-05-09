@@ -135,34 +135,12 @@
             }
         }
 
-        /***
-        // handle count down
-        function CountNumber() {
-            let count = document.getElementById('countNum').innerText;
-            var timeleft = count;
-            var downloadTimer = setInterval(function(){
-                if(timeleft <= 1){
-                    clearInterval(downloadTimer);
-                    console.log('zero !')
-                    $('.testBlock').append("<button onclick=\"alert('hi')\">까꿍</button>");
-                }
-                document.getElementById("countNum").innerText = timeleft - 1;
-                timeleft -= 1;
-            }, 1000);
-        }
-        ***/
-
-        // button 클릭 시 1초씩 증가
+        // Show current time
         function handleDate() {
-            const check = 10; // 입력한 초
-            let tmp = 1;
+            let now = new Date().toLocaleString();
             var downloadTimer = setInterval(function () {
-                if (tmp >= check) {
-                    clearInterval(downloadTimer);
-                    // 시간 다 지나면 버튼 보여지도록 코드 작성
-                }
-                console.log(new Date(parseInt(tmp) * 1000).toLocaleString())
-                tmp += 1;
+                let check = new Date().toLocaleString();
+                $('.currentTime').text(check)
             }, 1000);
         }
 
@@ -174,7 +152,7 @@
             if (ele.classList.contains('RecordWrap')) {
                 return;
             }
-
+            handleDate();
             currentProductId = number;
             getProductInfo()
             let hiddenBlock = document.getElementById('main')
@@ -231,6 +209,32 @@
                     "type": "event"
                 },
                 {
+                    "inputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "_productId",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "bid",
+                    "outputs": [],
+                    "stateMutability": "payable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "_productId",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "endAuction",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
                     "anonymous": false,
                     "inputs": [
                         {
@@ -242,6 +246,29 @@
                     ],
                     "name": "NewProduct",
                     "type": "event"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "string",
+                            "name": "_name",
+                            "type": "string"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "_price",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "_auctionEnd",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "registerProduct",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
                 },
                 {
                     "inputs": [
@@ -270,32 +297,6 @@
                         }
                     ],
                     "stateMutability": "view",
-                    "type": "function"
-                },
-                {
-                    "inputs": [
-                        {
-                            "internalType": "uint256",
-                            "name": "_productId",
-                            "type": "uint256"
-                        }
-                    ],
-                    "name": "bid",
-                    "outputs": [],
-                    "stateMutability": "payable",
-                    "type": "function"
-                },
-                {
-                    "inputs": [
-                        {
-                            "internalType": "uint256",
-                            "name": "_productId",
-                            "type": "uint256"
-                        }
-                    ],
-                    "name": "endAuction",
-                    "outputs": [],
-                    "stateMutability": "nonpayable",
                     "type": "function"
                 },
                 {
@@ -396,6 +397,11 @@
                             "internalType": "uint256",
                             "name": "",
                             "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "",
+                            "type": "uint256"
                         }
                     ],
                     "stateMutability": "view",
@@ -435,6 +441,11 @@
                                 {
                                     "internalType": "uint256",
                                     "name": "bid",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "internalType": "uint256",
+                                    "name": "timelimit",
                                     "type": "uint256"
                                 }
                             ],
@@ -485,36 +496,18 @@
                             "internalType": "uint256",
                             "name": "bid",
                             "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "timelimit",
+                            "type": "uint256"
                         }
                     ],
                     "stateMutability": "view",
                     "type": "function"
-                },
-                {
-                    "inputs": [
-                        {
-                            "internalType": "string",
-                            "name": "_name",
-                            "type": "string"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "_price",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "_auctionEnd",
-                            "type": "uint256"
-                        }
-                    ],
-                    "name": "registerProduct",
-                    "outputs": [],
-                    "stateMutability": "nonpayable",
-                    "type": "function"
                 }
             ];
-            var address = "0xC08bd54892663E1EC09a997bdCCFD55532E1c753";
+            var address = "0x8955a8E8477683fa5C0D0A64112f2761a1FcF309";
             window.web3 = new Web3(window.ethereum);
             contractInstance = await new window.web3.eth.Contract(abiobj, address);
             getAuctions()
@@ -777,6 +770,10 @@
                 <div class="subTitle">
                     <span>Time Limit : </span>
                     <span class="bidTimeLimit"></span>
+                </div>
+                <div class="subTitle">
+                    <span>Current Time : </span>
+                    <span class="currentTime"></span>
                 </div>
             </div>
             <div>
