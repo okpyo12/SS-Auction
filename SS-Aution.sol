@@ -27,19 +27,15 @@ contract Auction {
     
     // 경매 진행 정보 리스트
     mapping (uint256 => AuctionInfo) public auctionInfo;
-    
-    // 이벤트 정의
-    event NewProduct(uint256 productId);
-    event AuctionEnded(uint256 productId, address winner, uint256 bid);
-    
+
     // 경매 상품 등록 함수
     function registerProduct(string memory _name, uint256 _price, uint256 _auctionEnd) public {
         uint256 productId = products.length;
         products.push(Product(_name,  _price, msg.sender, false, payable(address(0)), 0, _auctionEnd));
         auctionInfo[productId] = AuctionInfo(payable(msg.sender), block.timestamp+_auctionEnd, false);
-        emit NewProduct(productId);
+
     }
-    
+
     // 입찰 함수
     function bid(uint256 _productId) public payable {
         Product storage product = products[_productId];
@@ -53,9 +49,8 @@ contract Auction {
         }
         product.bidder = payable(msg.sender);
         product.bid = msg.value;
-        emit AuctionEnded(_productId, msg.sender, msg.value);
     }
-    
+
     // 경매 종료 함수
     function endAuction(uint256 _productId) public {
         Product storage product = products[_productId];
@@ -66,7 +61,6 @@ contract Auction {
         auction.ended = true;
         product.sold = true;
         auction.beneficiary.transfer(product.bid);
-        emit AuctionEnded(_productId, product.bidder, product.bid);
     }
 
     //경매 확인 함수
