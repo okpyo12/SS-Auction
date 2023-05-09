@@ -33,7 +33,6 @@ contract Auction {
         uint256 productId = products.length;
         products.push(Product(_name,  _price, msg.sender, false, payable(address(0)), 0, _auctionEnd));
         auctionInfo[productId] = AuctionInfo(payable(msg.sender), block.timestamp+_auctionEnd, false);
-
     }
 
     // 입찰 함수
